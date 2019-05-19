@@ -1,4 +1,4 @@
-Create text based on Markov Chains
+Create text based on Markov Chains  
 usage: Generate_MarkovsChains.py [-h] file order n_words
 
 optional arguments:  
