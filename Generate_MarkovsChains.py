@@ -17,9 +17,11 @@ def prepare_source_data(filename):
 
 
 def make_pairs(corpus, order):
-    for i in range(1, order + 1):
-        for j in range(len(corpus)-i):
-            yield (corpus[j], corpus[j+i])
+    for i in range(order, len(corpus)-1):
+        key = []
+        for j in range(order, 0, -1):
+            key.append(corpus[i - j])
+        yield (' '.join(key), corpus[i])
 
 
 def generate_markov_table(filename, order):
@@ -44,8 +46,12 @@ def generate_markov_table(filename, order):
 
 def create_markov_text(word_dict, first_word, n_words, filename, order):
     chain = [first_word]
+    two_behind, one_behind = first_word.split(' ')
+
     for i in range(n_words):
-        chain.append(np.random.choice(word_dict[chain[-1]]))
+        next_value = np.random.choice(word_dict[two_behind + ' ' + one_behind])
+        chain.append(next_value)
+        two_behind, one_behind = one_behind, next_value
 
     now = datetime.now()
     date = now.strftime("%d_%m_%Y_%H_%M_%S")
@@ -77,9 +83,6 @@ def main():
         word_dict = json.loads(infile.read())
 
     first_word = np.random.choice(list(word_dict.keys())[:500])
-    while first_word.islower():
-        first_word = np.random.choice(list(word_dict.keys())[:500])
-
     create_markov_text(word_dict, first_word, args.n_words, args.file, args.order)
 
 
