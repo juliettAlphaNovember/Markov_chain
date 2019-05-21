@@ -3,6 +3,7 @@ import argparse
 import os
 import json
 from datetime import datetime
+from collections import deque
 
 
 def prepare_source_data(filename):
@@ -46,12 +47,13 @@ def generate_markov_table(filename, order):
 
 def create_markov_text(word_dict, first_word, n_words, filename, order):
     chain = [first_word]
-    two_behind, one_behind = first_word.split(' ')
+    prev_words = deque(first_word.split(' '))
 
     for i in range(n_words):
-        next_value = np.random.choice(word_dict[two_behind + ' ' + one_behind])
+        next_value = np.random.choice(word_dict[' '.join(prev_words)])
         chain.append(next_value)
-        two_behind, one_behind = one_behind, next_value
+        prev_words.popleft()
+        prev_words.append(next_value)
 
     now = datetime.now()
     date = now.strftime("%d_%m_%Y_%H_%M_%S")
